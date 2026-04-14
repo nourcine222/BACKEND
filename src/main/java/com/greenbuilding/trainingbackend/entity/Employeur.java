@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// Represents an employer that can be attached to trainers or users.
 @Entity
 @Table(name = "employeur")
 @Getter

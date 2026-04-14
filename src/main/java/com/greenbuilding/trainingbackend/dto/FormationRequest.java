@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+// Incoming payload used to create or update a formation.
 public record FormationRequest(
         @NotBlank
         @Size(max = 200)

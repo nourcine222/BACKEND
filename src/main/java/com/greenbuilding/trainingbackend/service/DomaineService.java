@@ -5,6 +5,7 @@ import com.greenbuilding.trainingbackend.dto.DomaineResponse;
 
 import java.util.List;
 
+// Contract for domain CRUD operations.
 public interface DomaineService {
     DomaineResponse create(DomaineRequest request);
 

@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// Represents a participant profile or job profile.
 @Entity
 @Table(name = "profil")
 @Getter

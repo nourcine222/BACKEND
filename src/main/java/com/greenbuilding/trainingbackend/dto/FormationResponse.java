@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+// Outgoing payload that exposes formation data and a compact participant summary.
 public record FormationResponse(
         Long id,
         String titre,
@@ -22,6 +23,7 @@ public record FormationResponse(
         TrainerType formateurType,
         List<ParticipantSummary> participants
 ) {
+    // Small nested DTO used to avoid returning full participant entities.
     public record ParticipantSummary(
             Integer id,
             String nom,

@@ -5,6 +5,7 @@ import com.greenbuilding.trainingbackend.dto.EmployeurResponse;
 
 import java.util.List;
 
+// Contract for employer CRUD operations.
 public interface EmployeurService {
     EmployeurResponse create(EmployeurRequest request);
 

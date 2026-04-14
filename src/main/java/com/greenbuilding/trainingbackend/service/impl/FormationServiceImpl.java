@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+// Implements formation CRUD rules and resolves domain, trainer, and participant relations.
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -31,6 +32,7 @@ public class FormationServiceImpl implements FormationService {
 
     @Override
     public FormationResponse create(FormationRequest request) {
+        // Prevent the same title/year combination from being stored twice.
         formationRepository.findByTitreIgnoreCaseAndAnnee(request.titre(), request.annee())
                 .ifPresent(formation -> {
                     throw new IllegalArgumentException("Formation already exists for this year");
@@ -42,6 +44,7 @@ public class FormationServiceImpl implements FormationService {
 
     @Override
     public FormationResponse update(Long id, FormationRequest request) {
+        // Load the current formation, then validate the new title/year combination.
         Formation formation = formationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id " + id));
 
@@ -57,6 +60,7 @@ public class FormationServiceImpl implements FormationService {
     @Override
     @Transactional(readOnly = true)
     public FormationResponse getById(Long id) {
+        // Read one formation and convert it into the response DTO.
         return formationRepository.findById(id)
                 .map(this::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id " + id));
@@ -65,6 +69,7 @@ public class FormationServiceImpl implements FormationService {
     @Override
     @Transactional(readOnly = true)
     public List<FormationResponse> getAll() {
+        // Return every formation as DTOs.
         return formationRepository.findAll()
                 .stream()
                 .map(this::toResponse)
@@ -73,12 +78,14 @@ public class FormationServiceImpl implements FormationService {
 
     @Override
     public void delete(Long id) {
+        // Delete only after confirming the formation exists.
         Formation formation = formationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id " + id));
         formationRepository.delete(formation);
     }
 
     private Formation buildFormation(Formation formation, FormationRequest request) {
+        // Resolve the domain and optional trainer before copying the rest of the request data.
         Domaine domaine = domaineRepository.findById(request.domaineId())
                 .orElseThrow(() -> new ResourceNotFoundException("Domaine not found with id " + request.domaineId()));
 
@@ -110,6 +117,7 @@ public class FormationServiceImpl implements FormationService {
     }
 
     private FormationResponse toResponse(Formation formation) {
+        // Flatten nested entity data so the API response stays easy to consume.
         Long formateurId = formation.getFormateur() != null ? formation.getFormateur().getId() : null;
         String formateurNom = formation.getFormateur() != null ? formation.getFormateur().getNom() : null;
         String formateurPrenom = formation.getFormateur() != null ? formation.getFormateur().getPrenom() : null;

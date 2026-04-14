@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// Represents a training domain such as informatique or finance.
 @Entity
 @Table(name = "domaine")
 @Getter

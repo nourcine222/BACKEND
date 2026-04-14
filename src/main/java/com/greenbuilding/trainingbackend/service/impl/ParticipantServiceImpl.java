@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+// Implements participant CRUD rules, including related structure and profile lookups.
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -27,6 +28,7 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     @Override
     public ParticipantResponse create(ParticipantRequest request) {
+        // Optional email values still need to be unique when they are present.
         if (request.email() != null && !request.email().isBlank()) {
             participantRepository.findByEmailIgnoreCase(request.email()).ifPresent(participant -> {
                 throw new IllegalArgumentException("Participant already exists");
@@ -39,6 +41,7 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     @Override
     public ParticipantResponse update(Integer id, ParticipantRequest request) {
+        // Load the participant first, then re-check email uniqueness if an email is provided.
         Participant participant = participantRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Participant not found with id " + id));
 
@@ -56,6 +59,7 @@ public class ParticipantServiceImpl implements ParticipantService {
     @Override
     @Transactional(readOnly = true)
     public ParticipantResponse getById(Integer id) {
+        // Return a single participant as a DTO.
         return participantRepository.findById(id)
                 .map(this::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Participant not found with id " + id));
@@ -64,6 +68,7 @@ public class ParticipantServiceImpl implements ParticipantService {
     @Override
     @Transactional(readOnly = true)
     public List<ParticipantResponse> getAll() {
+        // Return every participant as DTOs.
         return participantRepository.findAll()
                 .stream()
                 .map(this::toResponse)
@@ -72,12 +77,14 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     @Override
     public void delete(Integer id) {
+        // Delete only after the participant exists.
         Participant participant = participantRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Participant not found with id " + id));
         participantRepository.delete(participant);
     }
 
     private Participant buildParticipant(Participant participant, ParticipantRequest request) {
+        // Resolve foreign keys and copy sanitized request data into the entity.
         Structure structure = structureRepository.findById(request.structureId())
                 .orElseThrow(() -> new ResourceNotFoundException("Structure not found with id " + request.structureId()));
         Profil profil = profilRepository.findById(request.profilId())
@@ -93,6 +100,7 @@ public class ParticipantServiceImpl implements ParticipantService {
     }
 
     private ParticipantResponse toResponse(Participant participant) {
+        // Flatten the entity graph into the API response payload.
         return new ParticipantResponse(
                 participant.getId(),
                 participant.getNom(),

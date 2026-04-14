@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+// Implements role CRUD rules and DTO mapping.
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -21,6 +22,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleResponse create(RoleRequest request) {
+        // Avoid duplicate role names before inserting a new row.
         roleRepository.findByName(request.name()).ifPresent(role -> {
             throw new IllegalArgumentException("Role already exists");
         });
@@ -31,6 +33,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleResponse update(Integer id, RoleRequest request) {
+        // Load the role, validate the new name, then persist the change.
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with id " + id));
 
@@ -47,6 +50,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional(readOnly = true)
     public RoleResponse getById(Integer id) {
+        // Read one role and convert it to a response DTO.
         return roleRepository.findById(id)
                 .map(this::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with id " + id));
@@ -55,17 +59,20 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional(readOnly = true)
     public List<RoleResponse> getAll() {
+        // Return all roles as DTOs.
         return roleRepository.findAll().stream().map(this::toResponse).toList();
     }
 
     @Override
     public void delete(Integer id) {
+        // Delete only after verifying that the role exists.
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with id " + id));
         roleRepository.delete(role);
     }
 
     private RoleResponse toResponse(Role role) {
+        // Keep the response minimal and stable for clients.
         return new RoleResponse(role.getId(), role.getName());
     }
 }

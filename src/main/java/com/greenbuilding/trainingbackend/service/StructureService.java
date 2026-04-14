@@ -5,6 +5,7 @@ import com.greenbuilding.trainingbackend.dto.StructureResponse;
 
 import java.util.List;
 
+// Contract for structure CRUD operations.
 public interface StructureService {
     StructureResponse create(StructureRequest request);
 

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+// Implements trainer CRUD rules and relation lookups.
 @Service
 @RequiredArgsConstructor
 @Transactional

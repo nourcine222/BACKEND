@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// Stores trainer information and the employer they belong to.
 @Entity
 @Table(name = "formateur")
 @Getter

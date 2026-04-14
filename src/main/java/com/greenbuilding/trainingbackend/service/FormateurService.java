@@ -5,6 +5,7 @@ import com.greenbuilding.trainingbackend.dto.FormateurResponse;
 
 import java.util.List;
 
+// Contract for trainer CRUD operations.
 public interface FormateurService {
     FormateurResponse create(FormateurRequest request);
 

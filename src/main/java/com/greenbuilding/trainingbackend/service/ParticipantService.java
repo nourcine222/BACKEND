@@ -5,6 +5,7 @@ import com.greenbuilding.trainingbackend.dto.ParticipantResponse;
 
 import java.util.List;
 
+// Contract for participant CRUD operations.
 public interface ParticipantService {
     ParticipantResponse create(ParticipantRequest request);
 

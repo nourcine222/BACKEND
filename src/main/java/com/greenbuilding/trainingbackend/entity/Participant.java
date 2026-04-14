@@ -22,6 +22,7 @@ import org.hibernate.annotations.BatchSize;
 import java.util.ArrayList;
 import java.util.List;
 
+// Represents a participant and the structure/profile they belong to.
 @Entity
 @Table(name = "participant")
 @Getter

@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// Stores the role name used for security checks.
 @Entity
 @Table(name = "roles")
 @Getter

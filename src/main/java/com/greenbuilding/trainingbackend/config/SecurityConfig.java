@@ -12,6 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+// Defines which API routes are public and which ones require authentication or admin access.
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // The app uses stateless HTTP basic auth and protects the administrative endpoints.
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))

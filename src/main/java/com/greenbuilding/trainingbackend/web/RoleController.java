@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+// Handles CRUD requests for roles.
 @RestController
 @RequestMapping("/api/roles")
 @RequiredArgsConstructor
@@ -25,26 +26,31 @@ public class RoleController {
 
     private final RoleService roleService;
 
+    // Creates a new role.
     @PostMapping
     public ResponseEntity<RoleResponse> create(@Valid @RequestBody RoleRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(roleService.create(request));
     }
 
+    // Updates an existing role.
     @PutMapping("/{id}")
     public ResponseEntity<RoleResponse> update(@PathVariable Integer id, @Valid @RequestBody RoleRequest request) {
         return ResponseEntity.ok(roleService.update(id, request));
     }
 
+    // Retrieves a role by id.
     @GetMapping("/{id}")
     public ResponseEntity<RoleResponse> getById(@PathVariable Integer id) {
         return ResponseEntity.ok(roleService.getById(id));
     }
 
+    // Lists all roles.
     @GetMapping
     public ResponseEntity<List<RoleResponse>> getAll() {
         return ResponseEntity.ok(roleService.getAll());
     }
 
+    // Deletes a role by id.
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         roleService.delete(id);

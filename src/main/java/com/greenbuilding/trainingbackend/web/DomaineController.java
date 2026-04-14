@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+// Handles CRUD requests for domains.
 @RestController
 @RequestMapping("/api/domaines")
 @RequiredArgsConstructor
@@ -25,27 +26,32 @@ public class DomaineController {
 
     private final DomaineService domaineService;
 
+    // Creates a new domain.
     @PostMapping
     public ResponseEntity<DomaineResponse> create(@Valid @RequestBody DomaineRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(domaineService.create(request));
     }
 
+    // Updates an existing domain.
     @PutMapping("/{id}")
     public ResponseEntity<DomaineResponse> update(@PathVariable Integer id,
-                                                   @Valid @RequestBody DomaineRequest request) {
+                                                  @Valid @RequestBody DomaineRequest request) {
         return ResponseEntity.ok(domaineService.update(id, request));
     }
 
+    // Retrieves a domain by id.
     @GetMapping("/{id}")
     public ResponseEntity<DomaineResponse> getById(@PathVariable Integer id) {
         return ResponseEntity.ok(domaineService.getById(id));
     }
 
+    // Returns every stored domain.
     @GetMapping
     public ResponseEntity<List<DomaineResponse>> getAll() {
         return ResponseEntity.ok(domaineService.getAll());
     }
 
+    // Deletes a domain by id.
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         domaineService.delete(id);

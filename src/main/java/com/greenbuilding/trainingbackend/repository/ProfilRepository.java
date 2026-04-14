@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+// Repository for Profil entities.
 public interface ProfilRepository extends JpaRepository<Profil, Integer> {
     Optional<Profil> findByLibelleIgnoreCase(String libelle);
 }

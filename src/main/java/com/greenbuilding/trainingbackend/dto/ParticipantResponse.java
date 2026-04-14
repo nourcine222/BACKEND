@@ -1,5 +1,6 @@
 package com.greenbuilding.trainingbackend.dto;
 
+// Outgoing payload that exposes participant data to the API client.
 public record ParticipantResponse(
         Integer id,
         String nom,

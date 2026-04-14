@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// Stores application credentials and the role assigned to each account.
 @Entity
 @Table(name = "utilisateur")
 @Getter

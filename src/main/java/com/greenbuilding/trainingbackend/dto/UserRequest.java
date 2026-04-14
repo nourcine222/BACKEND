@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+// Incoming payload used to create or update a user.
 public record UserRequest(
         @NotBlank
         @Size(max = 80)

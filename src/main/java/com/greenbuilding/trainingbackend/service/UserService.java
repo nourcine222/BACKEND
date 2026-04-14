@@ -5,6 +5,7 @@ import com.greenbuilding.trainingbackend.dto.UserResponse;
 
 import java.util.List;
 
+// Contract for user CRUD operations.
 public interface UserService {
     UserResponse create(UserRequest request);
 

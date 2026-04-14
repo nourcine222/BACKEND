@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+// Represents a training session with its domain, trainer, and participants.
 @Entity
 @Table(name = "formation")
 @Getter

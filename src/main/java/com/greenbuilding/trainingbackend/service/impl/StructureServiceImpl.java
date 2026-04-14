@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+// Implements structure CRUD rules and DTO mapping.
 @Service
 @RequiredArgsConstructor
 @Transactional

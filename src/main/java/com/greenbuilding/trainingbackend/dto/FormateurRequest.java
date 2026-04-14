@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+// Incoming payload used to create or update a trainer.
 public record FormateurRequest(
         @NotBlank
         @Size(max = 100)

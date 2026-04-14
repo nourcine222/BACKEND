@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// Represents an organizational structure inside the training system.
 @Entity
 @Table(name = "structure")
 @Getter

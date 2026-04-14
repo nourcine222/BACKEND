@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+// Repository for Domaine entities.
 public interface DomaineRepository extends JpaRepository<Domaine, Integer> {
     Optional<Domaine> findByLibelleIgnoreCase(String libelle);
 }

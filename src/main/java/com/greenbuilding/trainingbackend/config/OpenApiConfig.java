@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import org.springframework.context.annotation.Configuration;
 
+// Configures the OpenAPI metadata and the Swagger basic-auth security scheme.
 @Configuration
 @OpenAPIDefinition(
         info = @Info(

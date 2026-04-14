@@ -5,6 +5,7 @@ import com.greenbuilding.trainingbackend.dto.FormationResponse;
 
 import java.util.List;
 
+// Contract for formation CRUD operations.
 public interface FormationService {
     FormationResponse create(FormationRequest request);
 

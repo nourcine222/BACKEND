@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+// Repository for Formation entities.
 public interface FormationRepository extends JpaRepository<Formation, Long> {
     Optional<Formation> findByTitreIgnoreCaseAndAnnee(String titre, Integer annee);
 }

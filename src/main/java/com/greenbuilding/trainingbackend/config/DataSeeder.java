@@ -18,6 +18,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+// Inserts the starter data the first time the application runs.
 @Component
 @RequiredArgsConstructor
 public class DataSeeder implements CommandLineRunner {
@@ -32,6 +33,7 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        // Create the baseline roles and sample reference data if they do not already exist.
         Role simpleUser = ensureRole(RoleName.SIMPLE_USER);
         Role responsable = ensureRole(RoleName.RESPONSABLE);
         Role adminRole = ensureRole(RoleName.ADMINISTRATEUR);
@@ -61,26 +63,31 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private Role ensureRole(RoleName name) {
+        // Reuse the role if it already exists to keep startup idempotent.
         return roleRepository.findByName(name)
                 .orElseGet(() -> roleRepository.save(Role.builder().name(name).build()));
     }
 
     private void ensureDomaine(String libelle) {
+        // Seed a domain only once, using a case-insensitive lookup.
         domaineRepository.findByLibelleIgnoreCase(libelle)
                 .orElseGet(() -> domaineRepository.save(Domaine.builder().libelle(libelle).build()));
     }
 
     private void ensureProfil(String libelle) {
+        // Seed a profile only once, using a case-insensitive lookup.
         profilRepository.findByLibelleIgnoreCase(libelle)
                 .orElseGet(() -> profilRepository.save(Profil.builder().libelle(libelle).build()));
     }
 
     private void ensureStructure(String libelle) {
+        // Seed a structure only once, using a case-insensitive lookup.
         structureRepository.findByLibelleIgnoreCase(libelle)
                 .orElseGet(() -> structureRepository.save(Structure.builder().libelle(libelle).build()));
     }
 
     private void ensureEmployeur(String nomEmployeur) {
+        // Seed the default employer only once.
         employeurRepository.findByNomEmployeurIgnoreCase(nomEmployeur)
                 .orElseGet(() -> employeurRepository.save(Employeur.builder().nomEmployeur(nomEmployeur).build()));
     }

@@ -5,6 +5,7 @@ import com.greenbuilding.trainingbackend.dto.ProfilResponse;
 
 import java.util.List;
 
+// Contract for profile CRUD operations.
 public interface ProfilService {
     ProfilResponse create(ProfilRequest request);
 

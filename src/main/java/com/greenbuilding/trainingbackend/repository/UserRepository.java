@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 
 import java.util.Optional;
 
+// Repository for AppUser entities and login-based lookups.
 public interface UserRepository extends JpaRepository<AppUser, Integer> {
     Optional<AppUser> findByLogin(String login);
 

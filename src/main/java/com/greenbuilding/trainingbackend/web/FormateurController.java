@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+// Handles CRUD requests for trainers.
 @RestController
 @RequestMapping("/api/formateurs")
 @RequiredArgsConstructor
@@ -25,27 +26,32 @@ public class FormateurController {
 
     private final FormateurService formateurService;
 
+    // Creates a new trainer.
     @PostMapping
     public ResponseEntity<FormateurResponse> create(@Valid @RequestBody FormateurRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(formateurService.create(request));
     }
 
+    // Updates an existing trainer.
     @PutMapping("/{id}")
     public ResponseEntity<FormateurResponse> update(@PathVariable Long id,
                                                     @Valid @RequestBody FormateurRequest request) {
         return ResponseEntity.ok(formateurService.update(id, request));
     }
 
+    // Retrieves a trainer by id.
     @GetMapping("/{id}")
     public ResponseEntity<FormateurResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(formateurService.getById(id));
     }
 
+    // Returns every trainer.
     @GetMapping
     public ResponseEntity<List<FormateurResponse>> getAll() {
         return ResponseEntity.ok(formateurService.getAll());
     }
 
+    // Deletes a trainer by id.
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         formateurService.delete(id);

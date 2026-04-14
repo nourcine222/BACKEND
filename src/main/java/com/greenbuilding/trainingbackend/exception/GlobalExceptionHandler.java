@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+// Converts common exceptions into consistent HTTP error responses.
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

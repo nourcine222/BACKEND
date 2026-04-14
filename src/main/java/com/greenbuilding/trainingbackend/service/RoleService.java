@@ -5,6 +5,7 @@ import com.greenbuilding.trainingbackend.dto.RoleResponse;
 
 import java.util.List;
 
+// Contract for role CRUD operations.
 public interface RoleService {
     RoleResponse create(RoleRequest request);
 

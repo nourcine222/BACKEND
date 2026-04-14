@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+// Implements user CRUD rules and converts entities into response DTOs.
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -26,6 +27,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse create(UserRequest request) {
+        // Prevent duplicate logins before saving the new user.
         userRepository.findByLogin(request.login()).ifPresent(user -> {
             throw new IllegalArgumentException("User already exists");
         });
@@ -36,6 +38,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse update(Integer id, UserRequest request) {
+        // Load the existing user, then make sure the new login does not collide with another account.
         AppUser user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
 
@@ -51,6 +54,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserResponse getById(Integer id) {
+        // Read one user and translate it to the API response shape.
         return userRepository.findById(id)
                 .map(this::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
@@ -59,17 +63,20 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<UserResponse> getAll() {
+        // Return every user as a list of DTOs.
         return userRepository.findAll().stream().map(this::toResponse).toList();
     }
 
     @Override
     public void delete(Integer id) {
+        // Delete only after confirming the user exists.
         AppUser user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
         userRepository.delete(user);
     }
 
     private AppUser buildUser(AppUser user, UserRequest request) {
+        // Fetch the role and then copy validated request data into the entity.
         Role role = roleRepository.findById(request.roleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with id " + request.roleId()));
 
@@ -80,6 +87,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserResponse toResponse(AppUser user) {
+        // Expose only the fields needed by the API client.
         return new UserResponse(
                 user.getId(),
                 user.getLogin(),

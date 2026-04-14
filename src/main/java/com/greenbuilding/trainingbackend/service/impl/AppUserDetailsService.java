@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+// Adapts AppUser records to Spring Security's UserDetails contract.
 @Service
 @RequiredArgsConstructor
 public class AppUserDetailsService implements UserDetailsService {
@@ -23,9 +24,11 @@ public class AppUserDetailsService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // Load the user with its role so Spring Security can build authorities.
         AppUser appUser = userRepository.findWithRoleByLogin(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
+        // Spring Security expects authorities prefixed with ROLE_ for role checks.
         List<GrantedAuthority> authorities = List.of(
                 new SimpleGrantedAuthority("ROLE_" + appUser.getRole().getName().name())
         );
