@@ -28,32 +28,36 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     @Override
     public ParticipantResponse create(ParticipantRequest request) {
+        String email = normalizeEmail(request.email());
+
         // Optional email values still need to be unique when they are present.
-        if (request.email() != null && !request.email().isBlank()) {
-            participantRepository.findByEmailIgnoreCase(request.email()).ifPresent(participant -> {
+        if (email != null) {
+            participantRepository.findByEmailIgnoreCase(email).ifPresent(participant -> {
                 throw new IllegalArgumentException("Participant already exists");
             });
         }
 
-        Participant saved = participantRepository.save(buildParticipant(new Participant(), request));
+        Participant saved = participantRepository.save(buildParticipant(new Participant(), request, email));
         return toResponse(saved);
     }
 
     @Override
     public ParticipantResponse update(Integer id, ParticipantRequest request) {
+        String email = normalizeEmail(request.email());
+
         // Load the participant first, then re-check email uniqueness if an email is provided.
         Participant participant = participantRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Participant not found with id " + id));
 
-        if (request.email() != null && !request.email().isBlank()) {
-            participantRepository.findByEmailIgnoreCase(request.email())
+        if (email != null) {
+            participantRepository.findByEmailIgnoreCase(email)
                     .filter(existing -> !existing.getId().equals(id))
                     .ifPresent(existing -> {
                         throw new IllegalArgumentException("Participant already exists");
                     });
         }
 
-        return toResponse(participantRepository.save(buildParticipant(participant, request)));
+        return toResponse(participantRepository.save(buildParticipant(participant, request, email)));
     }
 
     @Override
@@ -83,7 +87,7 @@ public class ParticipantServiceImpl implements ParticipantService {
         participantRepository.delete(participant);
     }
 
-    private Participant buildParticipant(Participant participant, ParticipantRequest request) {
+    private Participant buildParticipant(Participant participant, ParticipantRequest request, String email) {
         // Resolve foreign keys and copy sanitized request data into the entity.
         Structure structure = structureRepository.findById(request.structureId())
                 .orElseThrow(() -> new ResourceNotFoundException("Structure not found with id " + request.structureId()));
@@ -92,11 +96,18 @@ public class ParticipantServiceImpl implements ParticipantService {
 
         participant.setNom(request.nom().trim());
         participant.setPrenom(request.prenom().trim());
-        participant.setEmail(request.email() == null || request.email().isBlank() ? null : request.email().trim());
+        participant.setEmail(email);
         participant.setTel(request.tel() == null || request.tel().isBlank() ? null : request.tel().trim());
         participant.setStructure(structure);
         participant.setProfil(profil);
         return participant;
+    }
+
+    private String normalizeEmail(String email) {
+        if (email == null || email.isBlank()) {
+            return null;
+        }
+        return email.trim();
     }
 
     private ParticipantResponse toResponse(Participant participant) {

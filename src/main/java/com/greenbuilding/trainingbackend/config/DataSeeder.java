@@ -39,13 +39,15 @@ public class DataSeeder implements CommandLineRunner {
         Role adminRole = ensureRole(RoleName.ADMINISTRATEUR);
 
         if (userRepository.findByLogin("admin").isEmpty()) {
-            userRepository.save(
-                    AppUser.builder()
-                            .login("admin")
-                            .password(passwordEncoder.encode("admin123"))
-                            .role(adminRole)
-                            .build()
-            );
+            ensureUser("admin", "admin123", adminRole);
+        }
+
+        if (userRepository.findByLogin("responsable").isEmpty()) {
+            ensureUser("responsable", "responsable123", responsable);
+        }
+
+        if (userRepository.findByLogin("user").isEmpty()) {
+            ensureUser("user", "user123", simpleUser);
         }
 
         ensureDomaine("Informatique");
@@ -66,6 +68,16 @@ public class DataSeeder implements CommandLineRunner {
         // Reuse the role if it already exists to keep startup idempotent.
         return roleRepository.findByName(name)
                 .orElseGet(() -> roleRepository.save(Role.builder().name(name).build()));
+    }
+
+    private void ensureUser(String login, String rawPassword, Role role) {
+        userRepository.save(
+                AppUser.builder()
+                        .login(login)
+                        .password(passwordEncoder.encode(rawPassword))
+                        .role(role)
+                        .build()
+        );
     }
 
     private void ensureDomaine(String libelle) {

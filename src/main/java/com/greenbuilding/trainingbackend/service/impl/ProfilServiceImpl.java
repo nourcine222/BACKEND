@@ -22,13 +22,15 @@ public class ProfilServiceImpl implements ProfilService {
 
     @Override
     public ProfilResponse create(ProfilRequest request) {
-        profilRepository.findByLibelleIgnoreCase(request.libelle()).ifPresent(profil -> {
+        String libelle = request.libelle().trim();
+
+        profilRepository.findByLibelleIgnoreCase(libelle).ifPresent(profil -> {
             throw new IllegalArgumentException("Profil already exists");
         });
 
         Profil saved = profilRepository.save(
                 Profil.builder()
-                        .libelle(request.libelle().trim())
+                        .libelle(libelle)
                         .build()
         );
         return toResponse(saved);
@@ -36,16 +38,18 @@ public class ProfilServiceImpl implements ProfilService {
 
     @Override
     public ProfilResponse update(Integer id, ProfilRequest request) {
+        String libelle = request.libelle().trim();
+
         Profil profil = profilRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Profil not found with id " + id));
 
-        profilRepository.findByLibelleIgnoreCase(request.libelle())
+        profilRepository.findByLibelleIgnoreCase(libelle)
                 .filter(existing -> !existing.getId().equals(id))
                 .ifPresent(existing -> {
                     throw new IllegalArgumentException("Profil already exists");
                 });
 
-        profil.setLibelle(request.libelle().trim());
+        profil.setLibelle(libelle);
         return toResponse(profilRepository.save(profil));
     }
 

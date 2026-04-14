@@ -22,13 +22,15 @@ public class StructureServiceImpl implements StructureService {
 
     @Override
     public StructureResponse create(StructureRequest request) {
-        structureRepository.findByLibelleIgnoreCase(request.libelle()).ifPresent(structure -> {
+        String libelle = request.libelle().trim();
+
+        structureRepository.findByLibelleIgnoreCase(libelle).ifPresent(structure -> {
             throw new IllegalArgumentException("Structure already exists");
         });
 
         Structure saved = structureRepository.save(
                 Structure.builder()
-                        .libelle(request.libelle().trim())
+                        .libelle(libelle)
                         .build()
         );
         return toResponse(saved);
@@ -36,16 +38,18 @@ public class StructureServiceImpl implements StructureService {
 
     @Override
     public StructureResponse update(Integer id, StructureRequest request) {
+        String libelle = request.libelle().trim();
+
         Structure structure = structureRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Structure not found with id " + id));
 
-        structureRepository.findByLibelleIgnoreCase(request.libelle())
+        structureRepository.findByLibelleIgnoreCase(libelle)
                 .filter(existing -> !existing.getId().equals(id))
                 .ifPresent(existing -> {
                     throw new IllegalArgumentException("Structure already exists");
                 });
 
-        structure.setLibelle(request.libelle().trim());
+        structure.setLibelle(libelle);
         return toResponse(structureRepository.save(structure));
     }
 

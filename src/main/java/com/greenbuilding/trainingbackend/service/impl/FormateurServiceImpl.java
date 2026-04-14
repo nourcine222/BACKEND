@@ -25,30 +25,34 @@ public class FormateurServiceImpl implements FormateurService {
 
     @Override
     public FormateurResponse create(FormateurRequest request) {
-        if (request.email() != null && !request.email().isBlank()) {
-            formateurRepository.findByEmailIgnoreCase(request.email()).ifPresent(formateur -> {
+        String email = normalizeEmail(request.email());
+
+        if (email != null) {
+            formateurRepository.findByEmailIgnoreCase(email).ifPresent(formateur -> {
                 throw new IllegalArgumentException("Formateur already exists");
             });
         }
 
-        Formateur saved = formateurRepository.save(buildFormateur(new Formateur(), request));
+        Formateur saved = formateurRepository.save(buildFormateur(new Formateur(), request, email));
         return toResponse(saved);
     }
 
     @Override
     public FormateurResponse update(Long id, FormateurRequest request) {
+        String email = normalizeEmail(request.email());
+
         Formateur formateur = formateurRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Formateur not found with id " + id));
 
-        if (request.email() != null && !request.email().isBlank()) {
-            formateurRepository.findByEmailIgnoreCase(request.email())
+        if (email != null) {
+            formateurRepository.findByEmailIgnoreCase(email)
                     .filter(existing -> !existing.getId().equals(id))
                     .ifPresent(existing -> {
                         throw new IllegalArgumentException("Formateur already exists");
                     });
         }
 
-        return toResponse(formateurRepository.save(buildFormateur(formateur, request)));
+        return toResponse(formateurRepository.save(buildFormateur(formateur, request, email)));
     }
 
     @Override
@@ -75,7 +79,7 @@ public class FormateurServiceImpl implements FormateurService {
         formateurRepository.delete(formateur);
     }
 
-    private Formateur buildFormateur(Formateur formateur, FormateurRequest request) {
+    private Formateur buildFormateur(Formateur formateur, FormateurRequest request, String email) {
         Employeur employeur = null;
         if (request.employeurId() != null) {
             employeur = employeurRepository.findById(request.employeurId())
@@ -84,11 +88,18 @@ public class FormateurServiceImpl implements FormateurService {
 
         formateur.setNom(request.nom().trim());
         formateur.setPrenom(request.prenom().trim());
-        formateur.setEmail(request.email() == null || request.email().isBlank() ? null : request.email().trim());
+        formateur.setEmail(email);
         formateur.setTel(request.tel() == null || request.tel().isBlank() ? null : request.tel().trim());
         formateur.setType(request.type());
         formateur.setEmployeur(employeur);
         return formateur;
+    }
+
+    private String normalizeEmail(String email) {
+        if (email == null || email.isBlank()) {
+            return null;
+        }
+        return email.trim();
     }
 
     private FormateurResponse toResponse(Formateur formateur) {

@@ -7,7 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -34,5 +36,21 @@ class ApiSecuritySmokeTests {
         mockMvc.perform(get("/api/users")
                         .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin", "admin123")))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void userCreationTrimsWhitespaceInLogin() throws Exception {
+        mockMvc.perform(post("/api/users")
+                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin", "admin123"))
+                        .contentType("application/json")
+                        .content("""
+                                {
+                                  "login": "   trainee   ",
+                                  "password": "secret123",
+                                  "roleId": 3
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.login").value("trainee"));
     }
 }

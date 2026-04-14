@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,7 +24,7 @@ class StatisticsControllerTests {
         mockMvc.perform(get("/api/statistics/overview")
                         .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin", "admin123")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalUsers").value(1))
+                .andExpect(jsonPath("$.totalUsers").value(greaterThanOrEqualTo(3)))
                 .andExpect(jsonPath("$.totalRoles").value(3))
                 .andExpect(jsonPath("$.totalDomaines").value(3))
                 .andExpect(jsonPath("$.totalProfils").value(3))

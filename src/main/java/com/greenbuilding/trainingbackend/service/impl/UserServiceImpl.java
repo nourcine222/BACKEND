@@ -27,28 +27,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse create(UserRequest request) {
+        String login = request.login().trim();
+
         // Prevent duplicate logins before saving the new user.
-        userRepository.findByLogin(request.login()).ifPresent(user -> {
+        userRepository.findByLogin(login).ifPresent(user -> {
             throw new IllegalArgumentException("User already exists");
         });
 
-        AppUser saved = userRepository.save(buildUser(new AppUser(), request));
+        AppUser saved = userRepository.save(buildUser(new AppUser(), request, login));
         return toResponse(saved);
     }
 
     @Override
     public UserResponse update(Integer id, UserRequest request) {
+        String login = request.login().trim();
+
         // Load the existing user, then make sure the new login does not collide with another account.
         AppUser user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
 
-        userRepository.findByLogin(request.login())
+        userRepository.findByLogin(login)
                 .filter(existing -> !existing.getId().equals(id))
                 .ifPresent(existing -> {
                     throw new IllegalArgumentException("User already exists");
                 });
 
-        return toResponse(userRepository.save(buildUser(user, request)));
+        return toResponse(userRepository.save(buildUser(user, request, login)));
     }
 
     @Override
@@ -75,12 +79,12 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
-    private AppUser buildUser(AppUser user, UserRequest request) {
+    private AppUser buildUser(AppUser user, UserRequest request, String login) {
         // Fetch the role and then copy validated request data into the entity.
         Role role = roleRepository.findById(request.roleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with id " + request.roleId()));
 
-        user.setLogin(request.login().trim());
+        user.setLogin(login);
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setRole(role);
         return user;

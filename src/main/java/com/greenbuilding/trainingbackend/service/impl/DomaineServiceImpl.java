@@ -22,13 +22,15 @@ public class DomaineServiceImpl implements DomaineService {
 
     @Override
     public DomaineResponse create(DomaineRequest request) {
-        domaineRepository.findByLibelleIgnoreCase(request.libelle()).ifPresent(domaine -> {
+        String libelle = request.libelle().trim();
+
+        domaineRepository.findByLibelleIgnoreCase(libelle).ifPresent(domaine -> {
             throw new IllegalArgumentException("Domaine already exists");
         });
 
         Domaine saved = domaineRepository.save(
                 Domaine.builder()
-                        .libelle(request.libelle().trim())
+                        .libelle(libelle)
                         .build()
         );
         return toResponse(saved);
@@ -36,16 +38,18 @@ public class DomaineServiceImpl implements DomaineService {
 
     @Override
     public DomaineResponse update(Integer id, DomaineRequest request) {
+        String libelle = request.libelle().trim();
+
         Domaine domaine = domaineRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Domaine not found with id " + id));
 
-        domaineRepository.findByLibelleIgnoreCase(request.libelle())
+        domaineRepository.findByLibelleIgnoreCase(libelle)
                 .filter(existing -> !existing.getId().equals(id))
                 .ifPresent(existing -> {
                     throw new IllegalArgumentException("Domaine already exists");
                 });
 
-        domaine.setLibelle(request.libelle().trim());
+        domaine.setLibelle(libelle);
         return toResponse(domaineRepository.save(domaine));
     }
 

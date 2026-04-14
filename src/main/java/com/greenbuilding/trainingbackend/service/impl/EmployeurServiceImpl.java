@@ -22,13 +22,15 @@ public class EmployeurServiceImpl implements EmployeurService {
 
     @Override
     public EmployeurResponse create(EmployeurRequest request) {
-        employeurRepository.findByNomEmployeurIgnoreCase(request.nomEmployeur()).ifPresent(employeur -> {
+        String nomEmployeur = request.nomEmployeur().trim();
+
+        employeurRepository.findByNomEmployeurIgnoreCase(nomEmployeur).ifPresent(employeur -> {
             throw new IllegalArgumentException("Employeur already exists");
         });
 
         Employeur saved = employeurRepository.save(
                 Employeur.builder()
-                        .nomEmployeur(request.nomEmployeur().trim())
+                        .nomEmployeur(nomEmployeur)
                         .build()
         );
         return toResponse(saved);
@@ -36,16 +38,18 @@ public class EmployeurServiceImpl implements EmployeurService {
 
     @Override
     public EmployeurResponse update(Integer id, EmployeurRequest request) {
+        String nomEmployeur = request.nomEmployeur().trim();
+
         Employeur employeur = employeurRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employeur not found with id " + id));
 
-        employeurRepository.findByNomEmployeurIgnoreCase(request.nomEmployeur())
+        employeurRepository.findByNomEmployeurIgnoreCase(nomEmployeur)
                 .filter(existing -> !existing.getId().equals(id))
                 .ifPresent(existing -> {
                     throw new IllegalArgumentException("Employeur already exists");
                 });
 
-        employeur.setNomEmployeur(request.nomEmployeur().trim());
+        employeur.setNomEmployeur(nomEmployeur);
         return toResponse(employeurRepository.save(employeur));
     }
 

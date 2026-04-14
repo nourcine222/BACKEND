@@ -32,29 +32,35 @@ public class FormationServiceImpl implements FormationService {
 
     @Override
     public FormationResponse create(FormationRequest request) {
+        String titre = request.titre().trim();
+        String lieu = request.lieu().trim();
+
         // Prevent the same title/year combination from being stored twice.
-        formationRepository.findByTitreIgnoreCaseAndAnnee(request.titre(), request.annee())
+        formationRepository.findByTitreIgnoreCaseAndAnnee(titre, request.annee())
                 .ifPresent(formation -> {
                     throw new IllegalArgumentException("Formation already exists for this year");
                 });
 
-        Formation saved = formationRepository.save(buildFormation(new Formation(), request));
+        Formation saved = formationRepository.save(buildFormation(new Formation(), request, titre, lieu));
         return toResponse(saved);
     }
 
     @Override
     public FormationResponse update(Long id, FormationRequest request) {
+        String titre = request.titre().trim();
+        String lieu = request.lieu().trim();
+
         // Load the current formation, then validate the new title/year combination.
         Formation formation = formationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id " + id));
 
-        formationRepository.findByTitreIgnoreCaseAndAnnee(request.titre(), request.annee())
+        formationRepository.findByTitreIgnoreCaseAndAnnee(titre, request.annee())
                 .filter(existing -> !existing.getId().equals(id))
                 .ifPresent(existing -> {
                     throw new IllegalArgumentException("Formation already exists for this year");
                 });
 
-        return toResponse(formationRepository.save(buildFormation(formation, request)));
+        return toResponse(formationRepository.save(buildFormation(formation, request, titre, lieu)));
     }
 
     @Override
@@ -84,7 +90,7 @@ public class FormationServiceImpl implements FormationService {
         formationRepository.delete(formation);
     }
 
-    private Formation buildFormation(Formation formation, FormationRequest request) {
+    private Formation buildFormation(Formation formation, FormationRequest request, String titre, String lieu) {
         // Resolve the domain and optional trainer before copying the rest of the request data.
         Domaine domaine = domaineRepository.findById(request.domaineId())
                 .orElseThrow(() -> new ResourceNotFoundException("Domaine not found with id " + request.domaineId()));
@@ -103,11 +109,11 @@ public class FormationServiceImpl implements FormationService {
             }
         }
 
-        formation.setTitre(request.titre().trim());
+        formation.setTitre(titre);
         formation.setAnnee(request.annee());
         formation.setDureeJours(request.dureeJours());
         formation.setBudget(request.budget());
-        formation.setLieu(request.lieu().trim());
+        formation.setLieu(lieu);
         formation.setDateFormation(request.dateFormation());
         formation.setDomaine(domaine);
         formation.setFormateur(formateur);
